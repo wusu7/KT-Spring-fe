@@ -22,11 +22,11 @@ const communities = [
 //   name: "홍길동",
 //   email: "hong@example.com",
 //   stats: { posts: 24, participatingChats:3, comments: 156, likes: 89 },
-//   profileImage: "https://github.com/shadcn.png" 
+//   profileImage: "https://github.com/shadcn.png"
 // };
 
 // 목데이터, 로그인시 화면 확인하려면 주석처리 하기
- const mockUser = null; 
+const mockUser = null;
 
 interface PageProps {
   params: Promise<{
@@ -46,7 +46,6 @@ export default async function CommunityPage({ params }: PageProps) {
   return (
     <main className="max-w-[1200px] mx-auto pt-8 px-4 pb-20">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
         {/* 사이드바 (서버 컴포넌트에서 클라이언트 컴포넌트 호출) */}
         <section className="hidden lg:block col-span-1">
           <div className="sticky top-24">
@@ -56,16 +55,15 @@ export default async function CommunityPage({ params }: PageProps) {
 
         {/* 메인 콘텐츠 */}
         <section className="col-span-1 lg:col-span-3">
-          
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">{community.name} 게시판</h1>
-            <Link href={`/post?category=${community.id}`}>
-            </Link>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              {community.name} 게시판
+            </h1>
+            <Link href={`/post?category=${community.id}`}></Link>
           </div>
 
           {/* 알맹이 컴포넌트 호출 (클라이언트 영역) */}
           <CommunityBoard communityName={community.name} />
-
         </section>
       </div>
     </main>
