@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
@@ -25,7 +31,7 @@ export default function LoginForm() {
     e.preventDefault();
     // TODO: 나중에 실제 백엔드 연동 시 여기에 API 호출 로직 추가
     console.log("로그인 시도:", formData);
-    
+
     // 임시: 홈으로 이동
     router.push("/");
   };
@@ -42,10 +48,10 @@ export default function LoginForm() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">이메일</Label>
-            <Input 
-              id="email" 
-              type="email" 
-              placeholder="example@email.com" 
+            <Input
+              id="email"
+              type="email"
+              placeholder="example@email.com"
               value={formData.email}
               onChange={handleChange}
               required
@@ -53,8 +59,8 @@ export default function LoginForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">비밀번호</Label>
-            <Input 
-              id="password" 
+            <Input
+              id="password"
               type="password"
               placeholder="••••••••"
               value={formData.password}
@@ -62,14 +68,20 @@ export default function LoginForm() {
               required
             />
           </div>
-          
-          <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold">
+
+          <Button
+            type="submit"
+            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold"
+          >
             <LogIn className="w-4 h-4 mr-2" /> 로그인
           </Button>
 
           <div className="text-center text-sm text-slate-500 mt-4">
             계정이 없으신가요?{" "}
-            <Link href="/signup" className="text-slate-900 font-bold hover:underline">
+            <Link
+              href="/signup"
+              className="text-slate-900 font-bold hover:underline"
+            >
               회원가입
             </Link>
           </div>

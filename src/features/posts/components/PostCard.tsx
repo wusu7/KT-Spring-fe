@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Heart, User, Clock } from "lucide-react";
 
@@ -22,7 +28,9 @@ export default function PostCard({ post }: PostProps) {
     <Card className="hover:shadow-md transition-shadow cursor-pointer border-slate-200 flex flex-col h-full bg-white group">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start mb-2">
-          <Badge className={`${post.badgeColor || "bg-slate-100 text-slate-600"} border-none`}>
+          <Badge
+            className={`${post.badgeColor || "bg-slate-100 text-slate-600"} border-none`}
+          >
             {post.tag}
           </Badge>
           <span className="text-xs text-slate-400 flex items-center">
@@ -33,7 +41,7 @@ export default function PostCard({ post }: PostProps) {
           {post.title}
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="flex-1 pb-3">
         <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">
           {post.content}

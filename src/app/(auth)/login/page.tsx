@@ -6,7 +6,6 @@ export default function LoginPage() {
       {/* 로고나 앱 이름 등을 추가하고 싶다면 여기에 배치 */}
 
       <LoginForm />
-      
     </div>
   );
 }
