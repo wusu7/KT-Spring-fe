@@ -101,10 +101,14 @@ export default function ProfileCard({ user, currentCommunityId }: UserProps) {
         {/* 5. 버튼 (로그인/회원가입 vs 글쓰기) */}
         <Button 
           className="w-full font-bold h-12 text-sm shadow-sm bg-slate-900 hover:bg-slate-800 text-white transition-colors"
-          onClick={(e) => {
-            e.stopPropagation();
-            user ? handleWrite() : handleLogin();
-          }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (user) {
+                handleWrite();
+              } else {
+                handleLogin();
+              }
+            }}  
         >
           {user ? (
             "글쓰기"

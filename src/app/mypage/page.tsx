@@ -1,81 +1,78 @@
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileCard from "@/features/users/components/ProfileCard";
-import PostCard from "@/features/posts/components/PostCard";
+import { FileText, MessageCircle } from "lucide-react";
 
-// 내 정보 (가짜 데이터) - 나중엔 서버에서 받아옴
+// 1. 프로필 카드용 데이터
 const myProfile = {
   id: 1,
   name: "나의 닉네임",
-  role: "CHALLENGERS",
   email: "myemail@example.com",
-  image: null, // 프로필 이미지 URL이 있다면 여기에
-} as any;
-
-// 내가 쓴 글 (가짜 데이터)
-const myPosts = [
-  {
-    id: 101,
-    tag: "질문",
-    title: "리팩토링하면서 배운 점 공유합니다",
-    content: "처음에는 폴더 구조 잡는 게 귀찮았는데, 막상 나누고 보니 유지보수가 정말 편해지네요. 특히 features로 나누는 전략이...",
-    author: "나의 닉네임",
-    date: "방금 전",
-    likes: 5,
-    comments: 2,
-    badgeColor: "bg-blue-100 text-blue-600 hover:bg-blue-100"
-  },
-  {
-    id: 102,
-    tag: "잡담",
-    title: "오늘 저녁 메뉴 추천 좀 해주세요",
-    content: "코딩하다 보니 배가 너무 고픈데 다들 뭐 드시나요? 간단하게 먹을 수 있는 걸로 추천 부탁드립니다.",
-    author: "나의 닉네임",
-    date: "2시간 전",
-    likes: 0,
-    comments: 8,
-    badgeColor: "bg-gray-100 text-gray-600 hover:bg-gray-100"
-  },
-];
+  role: "CHALLENGERS",
+  profileImage: "", 
+  community_id: 1,
+  stats: {
+    posts: 5,             
+    comments: 12,
+    likes: 8,
+    participatingChats: 3 
+  }
+};
 
 export default function MyPage() {
   return (
     <main className="max-w-[1200px] mx-auto pt-8 px-4 pb-20">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
-        {/* 왼쪽: 프로필 카드 재사용 */}
+        {/* 왼쪽: 프로필 카드 */}
         <section className="col-span-1">
           <div className="sticky top-24">
             <ProfileCard user={myProfile} currentCommunityId={0} />
           </div>
         </section>
 
-        {/* 오른쪽: 내가 쓴 글 목록 */}
+        {/* 오른쪽: 메인 콘텐츠 영역 */}
         <section className="col-span-1 lg:col-span-3">
-          <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-6 pb-4">
-              <h1 className="text-2xl font-bold text-slate-900">내 활동</h1>
-              <p className="text-slate-500 mt-1">내가 작성한 게시글과 활동 내역을 확인하세요.</p>
-            </div>
+          
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-slate-900">마이페이지</h1>
+            <p className="text-slate-500 mt-2">나의 활동 현황을 한눈에 확인하세요.</p>
+          </div>
+
+          {/* 통계 카드 영역 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <Separator />
-            
-            <div className="p-6 bg-slate-50 min-h-[500px]">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">작성한 게시글 ({myPosts.length})</h2>
-              
-              <div className="grid gap-4">
-                {myPosts.length > 0 ? (
-                  myPosts.map((post) => (
-                    <div key={post.id} className="h-full">
-                      <PostCard post={post} />
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-20 text-slate-400">
-                    아직 작성한 게시글이 없습니다.
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* 1. 내가 쓴 글 통계 */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  내가 쓴 글
+                </CardTitle>
+                <FileText className="h-4 w-4 text-slate-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{myProfile.stats.posts}개</div>
+                <p className="text-xs text-slate-500 mt-1">
+                  커뮤니티에 작성한 게시글 수
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* 2. 참여 중인 채팅 통계 */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  참여 중인 채팅
+                </CardTitle>
+                <MessageCircle className="h-4 w-4 text-slate-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{myProfile.stats.participatingChats}개</div>
+                <p className="text-xs text-slate-500 mt-1">
+                  현재 활성화된 오픈채팅방 수
+                </p>
+              </CardContent>
+            </Card>
+
           </div>
         </section>
 

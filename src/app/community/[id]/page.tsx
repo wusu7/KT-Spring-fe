@@ -58,11 +58,8 @@ export default async function CommunityPage({ params }: PageProps) {
         <section className="col-span-1 lg:col-span-3">
           
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">{community.name}</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">{community.name} 게시판</h1>
             <Link href={`/post?category=${community.id}`}>
-              <Button className="bg-slate-900 hover:bg-slate-800 text-white font-bold">
-                <PenSquare className="w-4 h-4 mr-2" /> 글쓰기
-              </Button>
             </Link>
           </div>
 

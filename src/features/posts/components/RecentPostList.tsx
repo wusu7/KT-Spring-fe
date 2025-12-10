@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Heart, MessageSquare } from "lucide-react";
 
 // 데이터 타입 정의

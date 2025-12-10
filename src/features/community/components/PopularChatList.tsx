@@ -53,7 +53,7 @@ export default function PopularChatList({ chatRooms }: { chatRooms: ChatRoom[] }
               <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 relative">
                 <div className="absolute -top-1.5 left-4 w-3 h-3 bg-slate-50 border-t border-l border-slate-100 transform rotate-45"></div>
                 <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
-                  "{room.lastMessage}"
+                  {room.lastMessage}
                 </p>
               </div>
 
