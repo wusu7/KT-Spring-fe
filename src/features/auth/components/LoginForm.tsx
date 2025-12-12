@@ -12,28 +12,70 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { LogIn } from "lucide-react";
+import { LogIn, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/features/auth/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useAuth();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const API_ENDPOINT = "/api/login";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+    if (error) setError(null);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: 나중에 실제 백엔드 연동 시 여기에 API 호출 로직 추가
-    console.log("로그인 시도:", formData);
+    setError(null);
+    setIsLoading(true);
 
-    // 임시: 홈으로 이동
-    router.push("/");
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "이메일 또는 비밀번호를 확인해주세요.");
+      }
+
+      const data = await response.json(); 
+      console.log("로그인 응답 데이터:", data);
+
+      // 토큰과 사용자 정보 분리
+      const { accessToken, ...userData } = data;
+
+      if (!accessToken) {
+        throw new Error("토큰을 받지 못했습니다.");
+      }
+
+      // Context에 로그인 정보 업데이트 (토큰, 유저정보 둘 다 전달)
+      login(accessToken, userData);
+
+      alert("로그인되었습니다!");
+      router.push("/");
+
+    } catch (err: any) {
+      console.error("로그인 오류:", err);
+      setError(err.message || "로그인 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -55,6 +97,7 @@ export default function LoginForm() {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -66,14 +109,27 @@ export default function LoginForm() {
               value={formData.password}
               onChange={handleChange}
               required
+              disabled={isLoading}
             />
           </div>
+
+          {error && (
+            <p className="text-sm font-medium text-red-500 text-center">
+              {error}
+            </p>
+          )}
 
           <Button
             type="submit"
             className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold"
+            disabled={isLoading}
           >
-            <LogIn className="w-4 h-4 mr-2" /> 로그인
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <LogIn className="w-4 h-4 mr-2" />
+            )}
+            {isLoading ? "로그인 중..." : "로그인"}
           </Button>
 
           <div className="text-center text-sm text-slate-500 mt-4">

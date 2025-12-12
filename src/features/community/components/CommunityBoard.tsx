@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link"; 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,64 +15,106 @@ import { Input } from "@/components/ui/input";
 import { Users, ArrowRight, X, Send } from "lucide-react";
 import PostCard from "@/features/posts/components/PostCard";
 
-// 임시 데이터
-const mockPosts = [
-  {
-    id: 1,
-    tag: "질문",
-    title: "Next.js 14에서 서버 액션 에러 질문입니다 ㅠㅠ",
-    content:
-      "서버 컴포넌트에서 클라이언트 컴포넌트로 props를 넘길 때 직렬화 에러가 자꾸 뜨는데 도저히 이유를 모르겠네요.",
-    author: "코딩초보",
-    date: "방금 전",
-    likes: 2,
-    comments: 4,
-    badgeColor: "bg-red-100 text-red-600 hover:bg-red-100",
-  },
-  {
-    id: 2,
-    tag: "팁",
-    title: "Tailwind CSS 쓰실 때 유용한 플러그인 추천",
-    content:
-      "클래스명이 너무 길어져서 가독성이 떨어질 때 'tailwind-merge'랑 'clsx' 조합해서 쓰면 진짜 편합니다.",
-    author: "CSS장인",
-    date: "10분 전",
-    likes: 15,
-    comments: 8,
-    badgeColor: "bg-blue-100 text-blue-600 hover:bg-blue-100",
-  },
-  {
-    id: 3,
-    tag: "정보",
-    title: "2024년 프론트엔드 로드맵 정리 공유합니다",
-    content:
-      "이번에 취업 준비하면서 정리한 로드맵입니다. React, Next.js, TS 중심으로 정리했고 필요하신 분들 참고하세요!",
-    author: "취준생",
-    date: "1시간 전",
-    likes: 42,
-    comments: 12,
-    badgeColor: "bg-green-100 text-green-600 hover:bg-green-100",
-  },
-  {
-    id: 4,
-    tag: "잡담",
-    title: "요즘 개발자 취업 시장 어떤가요?",
-    content:
-      "신입으로 지원하고 있는데 서류 통과율이 너무 낮네요... 포트폴리오를 갈아엎어야 할지 고민입니다.",
-    author: "고민많음",
-    date: "3시간 전",
-    likes: 5,
-    comments: 21,
-    badgeColor: "bg-gray-100 text-gray-600 hover:bg-gray-100",
-  },
-];
+// 게시글 타입 정의
+interface Post {
+  id: number;
+  tag?: string;
+  title: string;
+  content: string;
+  author: string;
+  date: string;
+  likes: number;
+  comments: number;
+  badgeColor?: string;
+}
 
 interface CommunityBoardProps {
   communityName: string;
+  communityId: number;
 }
 
-export function CommunityBoard({ communityName }: CommunityBoardProps) {
+export function CommunityBoard({ communityName, communityId }: CommunityBoardProps) {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 게시글 목록 불러오기
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      try {
+        // ========================================
+        // TODO: API 연동 시 아래 주석 해제하고 사용
+        // ========================================
+        // const response = await fetch(`/api/posts?communityId=${communityId}`);
+        // if (response.ok) {
+        //   const data = await response.json();
+        //   setPosts(data);
+        // }
+        // ========================================
+
+        // 임시 데이터 (API 연동 후 삭제)
+        const mockPosts: Post[] = [
+          {
+            id: 1,
+            tag: "질문",
+            title: "Next.js 14에서 서버 액션 에러 질문입니다 ㅠㅠ",
+            content:
+              "서버 컴포넌트에서 클라이언트 컴포넌트로 props를 넘길 때 직렬화 에러가 자꾸 뜨는데 도저히 이유를 모르겠네요.",
+            author: "코딩초보",
+            date: "방금 전",
+            likes: 2,
+            comments: 4,
+            badgeColor: "bg-red-100 text-red-600 hover:bg-red-100",
+          },
+          {
+            id: 2,
+            tag: "팁",
+            title: "Tailwind CSS 쓰실 때 유용한 플러그인 추천",
+            content:
+              "클래스명이 너무 길어져서 가독성이 떨어질 때 'tailwind-merge'랑 'clsx' 조합해서 쓰면 진짜 편합니다.",
+            author: "CSS장인",
+            date: "10분 전",
+            likes: 15,
+            comments: 8,
+            badgeColor: "bg-blue-100 text-blue-600 hover:bg-blue-100",
+          },
+          {
+            id: 3,
+            tag: "정보",
+            title: "2024년 프론트엔드 로드맵 정리 공유합니다",
+            content:
+              "이번에 취업 준비하면서 정리한 로드맵입니다. React, Next.js, TS 중심으로 정리했고 필요하신 분들 참고하세요!",
+            author: "취준생",
+            date: "1시간 전",
+            likes: 42,
+            comments: 12,
+            badgeColor: "bg-green-100 text-green-600 hover:bg-green-100",
+          },
+          {
+            id: 4,
+            tag: "잡담",
+            title: "요즘 개발자 취업 시장 어떤가요?",
+            content:
+              "신입으로 지원하고 있는데 서류 통과율이 너무 낮네요... 포트폴리오를 갈아엎어야 할지 고민입니다.",
+            author: "고민많음",
+            date: "3시간 전",
+            likes: 5,
+            comments: 21,
+            badgeColor: "bg-gray-100 text-gray-600 hover:bg-gray-100",
+          },
+        ];
+        setPosts(mockPosts);
+        
+      } catch (error) {
+        console.error("게시글 불러오기 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [communityId]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(200px,auto)]">
@@ -182,11 +224,21 @@ export function CommunityBoard({ communityName }: CommunityBoardProps) {
       </Card>
       
       {/* ---------------- 게시글 목록 ---------------- */}
-      {mockPosts.map((post) => (
-        <Link key={post.id} href={`/community/${post.id}`} className="block h-full group">
-          <PostCard post={post} />
-        </Link>
-      ))}
+      {isLoading ? (
+        <div className="col-span-2 flex items-center justify-center py-10">
+          <p className="text-slate-400">게시글을 불러오는 중...</p>
+        </div>
+      ) : posts.length === 0 ? (
+        <div className="col-span-2 flex items-center justify-center py-10">
+          <p className="text-slate-400">아직 게시글이 없습니다.</p>
+        </div>
+      ) : (
+        posts.map((post) => (
+          <Link key={post.id} href={`/community/${post.id}`} className="block h-full group">
+            <PostCard post={post} />
+          </Link>
+        ))
+      )}
     </div>
   );
 }

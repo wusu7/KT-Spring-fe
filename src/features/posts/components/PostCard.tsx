@@ -12,7 +12,7 @@ import { MessageCircle, Heart, User, Clock } from "lucide-react";
 interface PostProps {
   post: {
     id: number;
-    tag: string;
+    tag?: string;
     title: string;
     content: string;
     author: string;

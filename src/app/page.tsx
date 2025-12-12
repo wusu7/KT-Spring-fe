@@ -87,7 +87,7 @@ export default function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* [LEFT] 사이드바 */}
         <section className="hidden lg:block col-span-1">
-          <ProfileCard user={mockUser} />
+          <ProfileCard/>
         </section>
 
         {/* [RIGHT] 메인 콘텐츠 */}

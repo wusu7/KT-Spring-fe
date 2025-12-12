@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,10 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Loader2, Camera, User } from "lucide-react";
 import Link from "next/link";
 
-// ERD의 community 테이블 기준 (총 9개)
 const communities = [
   { id: 1, name: "풀스택" },
   { id: 2, name: "프론트엔드" },
@@ -30,7 +29,10 @@ const communities = [
 
 export default function SignupForm() {
   const router = useRouter();
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -48,7 +50,23 @@ export default function SignupForm() {
     }));
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("이미지 크기는 5MB 이하여야 합니다.");
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        alert("이미지 파일만 업로드 가능합니다.");
+        return;
+      }
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -64,17 +82,49 @@ export default function SignupForm() {
       return;
     }
 
-    const payload = {
+    setIsLoading(true);
+
+    // FormData 객체 생성
+    const signupFormData = new FormData();
+    
+    // 회원가입 정보를 Blob(JSON)으로 변환하여 추가
+    const signupData = {
       email: formData.email,
       password: formData.password,
       name: formData.name,
       community_id: Number(formData.communityId),
       role: "CHALLENGERS",
     };
+    signupFormData.append(
+      "signupData",
+      new Blob([JSON.stringify(signupData)], { type: "application/json" })
+    );
 
-    console.log("DB 전송 데이터:", payload);
-    alert("회원가입이 완료되었습니다.");
-    router.push("/login");
+    // 프로필 이미지가 있다면 추가
+    if (avatarFile) {
+      signupFormData.append("avatarFile", avatarFile);
+    }
+
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        // Content-Type 헤더는 제거 (브라우저가 자동 설정)
+        body: signupFormData,
+      });
+
+      if (response.ok) {
+        alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
+        router.push("/login");
+      } else {
+        const errorText = await response.text();
+        alert(`회원가입 실패: ${errorText || "서버 오류가 발생했습니다."}`);
+      }
+    } catch (error) {
+      console.error("Signup Error:", error);
+      alert("서버와 연결할 수 없습니다. 백엔드가 켜져있는지 확인해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -89,6 +139,37 @@ export default function SignupForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSignup} className="space-y-6">
+          
+          {/* 프로필 이미지 (선택) */}
+          <div className="flex flex-col items-center space-y-3">
+            <Label className="text-base">프로필 이미지 (선택)</Label>
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="relative w-24 h-24 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 hover:border-slate-400 cursor-pointer transition-colors flex items-center justify-center overflow-hidden group"
+            >
+              {avatarPreview ? (
+                <img 
+                  src={avatarPreview} 
+                  alt="프로필 미리보기" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-10 h-10 text-slate-300" />
+              )}
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Camera className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+            <p className="text-xs text-slate-400">클릭하여 이미지 선택 (최대 5MB)</p>
+          </div>
+
           {/* 1. 이메일 */}
           <div className="space-y-2">
             <Label htmlFor="email">
@@ -102,6 +183,7 @@ export default function SignupForm() {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -118,6 +200,7 @@ export default function SignupForm() {
               value={formData.password}
               onChange={handleChange}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -134,6 +217,7 @@ export default function SignupForm() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -149,6 +233,7 @@ export default function SignupForm() {
               value={formData.name}
               onChange={handleChange}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -170,6 +255,7 @@ export default function SignupForm() {
                       value={c.id}
                       checked={formData.communityId === String(c.id)}
                       onChange={handleChange}
+                      disabled={isLoading}
                       className="w-4 h-4 accent-slate-900 cursor-pointer shrink-0"
                     />
                     <span className="text-sm font-medium text-slate-700 truncate">
@@ -181,7 +267,7 @@ export default function SignupForm() {
             </div>
           </div>
 
-          {/* 6. 개인정보 동의 (수정됨: 스타일 통일 및 수직 중앙 정렬) */}
+          {/* 6. 개인정보 동의 */}
           <div className="flex items-center space-x-3 p-4 border border-slate-200 rounded-lg bg-slate-50">
             <input
               id="terms"
@@ -189,6 +275,7 @@ export default function SignupForm() {
               type="checkbox"
               checked={formData.agreed}
               onChange={handleChange}
+              disabled={isLoading}
               className="w-4 h-4 accent-slate-900 cursor-pointer shrink-0"
             />
             <label
@@ -207,11 +294,22 @@ export default function SignupForm() {
             </label>
           </div>
 
+          {/* 가입 버튼 */}
           <Button
             type="submit"
             className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 text-md mt-4"
+            disabled={isLoading}
           >
-            <UserPlus className="w-4 h-4 mr-2" /> 가입 완료하기
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                가입 중...
+              </>
+            ) : (
+              <>
+                <UserPlus className="w-4 h-4 mr-2" /> 가입 완료하기
+              </>
+            )}
           </Button>
 
           <div className="text-center text-sm text-slate-500 mt-4">
